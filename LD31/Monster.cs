@@ -17,6 +17,7 @@ namespace LD31
         private SpriteInstance Sprite;
         private byte Health;
         private float m_Speed;
+        private float m_TrollFactor;
         private float m_TTL;
         private Vector2 m_Location;
 
@@ -27,6 +28,7 @@ namespace LD31
         {
             this.Health = p_Health;
             this.m_Speed = p_Speed;
+            this.m_TrollFactor = 1.0f;
         }
 
 
@@ -60,16 +62,17 @@ namespace LD31
         {
             m_TTL += DeltaTime;
 
-            Vector2 vDirection = Vector2.Normalize(p_Player.Location - this.m_Location);
+            Vector2 vDirection = Vector2.Normalize(p_Player.Location - this.m_Location) * m_Speed * DeltaTime * m_TrollFactor;
 
             foreach (Rectangle i_Collision in p_Player.Dungeon.CurrentRoom.Collisions)
             {
                 vDirection = Utils.Collide(this.m_CollisionBounds, i_Collision, vDirection);
             }
 
-            this.SetLocation(this.m_Location + vDirection * m_Speed * DeltaTime);
+            this.SetLocation(this.m_Location + vDirection );
             
-            
+            // (REVISED) Troll Factor
+            if(m_TrollFactor < 3.0f) m_TrollFactor *= 1.0f + (0.12f * DeltaTime);
 
 
         }

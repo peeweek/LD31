@@ -53,7 +53,7 @@ namespace LD31
             LD31.SpriteLibrary = SpriteLibrary;
             LD31.MonsterFactory = MonsterFactory;
             this.MainMenu.Initialize();
-            this.Window.Title = "LD31 - Through The Windows - PeeWeeK";
+            this.Window.Title = "Through The Windows (REVISED EDITION)";
             Globals.SCREEN_WIDTH = (ushort)GraphicsDevice.Adapter.CurrentDisplayMode.Width;
             Globals.SCREEN_HEIGHT = (ushort)GraphicsDevice.Adapter.CurrentDisplayMode.Height;
             this.SetBounds(new Rectangle(Globals.SCREEN_WIDTH / 2 - 400, Globals.SCREEN_HEIGHT / 2 - 240, 800, 480));

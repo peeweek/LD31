@@ -26,18 +26,22 @@ namespace LD31
             this.Templates.Add(1, new MonsterTemplate(3,15,120.0f, 340.0f, 51));
         }
 
-        public Monster Spawn(byte id, byte difficulty, Rectangle gameArea )
+        public Monster Spawn(byte id, byte difficulty, Rectangle p_SpawnArea, Vector2 p_PlayerPosition )
         {
             Monster vOut = new Monster(this.Templates[id].getHealth(difficulty), this.Templates[id].getSpeed(difficulty));
+            Vector2 vLoc;
 
-
-            Vector2 vLoc = new Vector2(
-                gameArea.X + (int)(1.5f*Globals.CELLSIZE) + (Utils.RNG.Next(gameArea.Width - (int)(3.0f * Globals.CELLSIZE))),
-                gameArea.Y + (int)(1.5f*Globals.CELLSIZE)+ (Utils.RNG.Next(gameArea.Height - (int)(3.0f * Globals.CELLSIZE)))
-                ); 
+            // (REVISED) Redo location generation until at correct distance
+            do
+            {
+                vLoc = new Vector2(
+                    p_SpawnArea.X + (int)(1.5f * Globals.CELLSIZE) + (Utils.RNG.Next(p_SpawnArea.Width - (int)(3.0f * Globals.CELLSIZE))),
+                    p_SpawnArea.Y + (int)(1.5f * Globals.CELLSIZE) + (Utils.RNG.Next(p_SpawnArea.Height - (int)(3.0f * Globals.CELLSIZE)))
+                    );
+            } 
+            while (Vector2.Distance(vLoc, p_PlayerPosition) < Globals.MIN_ENEMY_SPAWN_DISTANCE);
 
             vOut.Initialize(this.Templates[id].SpriteIndex, vLoc);
-
             return vOut;
         }
     }

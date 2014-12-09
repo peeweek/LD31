@@ -84,13 +84,20 @@ namespace LD31
             // Filling Ground Data & Walls
             ///////////////////////////////////////////////////////////////
             
+            // REVISED : IS THIS A BIGROOM?
+            bool bBigroom = (numX * numY > Globals.BIGROOM_MIN_SIZE);
             data = new byte[numX, numY];
             for(ushort i = 0 ; i < numX; i++)
                 for (ushort j = 0; j < numY; j++)
                 {
                     if (i == 0 || i == numX - 1 || j == 0 || j == numY - 1)
-                    data[i, j] = (byte)Utils.RNG.Next(10, 13); // Wall
-                    else data[i, j] = (byte)Utils.RNG.Next(0, 6); // Ground
+                        data[i, j] = (byte)Utils.RNG.Next(10, 13); // Wall
+                    else
+                    {
+                        data[i, j] = (byte)Utils.RNG.Next(0, 6); // Ground
+                        // (REVISED) CHANCE TO SPAWN WALLS IN BIG ROOMS
+                        if (bBigroom) if (Utils.RNG.Next(255) < Globals.BIGROOM_OBSTACLE_SPAWN_CHANCE) data[i, j] = (byte)Utils.RNG.Next(10, 13);
+                    }
                 }
             ///////////////////////////////////////////////////////////////
             // .. Gaps to Other Rooms
@@ -137,7 +144,7 @@ namespace LD31
                 {
                     vCurrent = (byte)Utils.RNG.Next(1, numX - 2);
                     data[vCurrent, numY - 1] = (byte)Utils.RNG.Next(0, 5);
-                    this.m_RoomExits.Add(new RoomExit(Cardinals.South, (byte)(vCurrent + minX), (byte)(minY+numY+1)));
+                    this.m_RoomExits.Add(new RoomExit(Cardinals.South, (byte)(vCurrent + minX), (byte)(minY+numY)));
                 }
             }
 
@@ -157,11 +164,14 @@ namespace LD31
                 {
                     vCurrent = (byte)Utils.RNG.Next(1, numY - 2);
                     data[numX - 1, vCurrent] = (byte)Utils.RNG.Next(0, 5);
-                    this.m_RoomExits.Add(new RoomExit(Cardinals.East, (byte)(minX + numX + 1), (byte)(vCurrent + minY)));
+                    this.m_RoomExits.Add(new RoomExit(Cardinals.East, (byte)(minX + numX ), (byte)(vCurrent + minY)));
                 }
             }
 
-            
+            // (REVISED) NEITHER ENEMIES NOR PICKUPS ON STARTUP
+            if (p_LastRoomExit.ExitLocation != Cardinals.Null)
+            {
+
                 ////////////////////////////////////////////////////////////////////////////
                 // .. Props & Pickups (Hearts? Crystals?)                                 //
                 ////////////////////////////////////////////////////////////////////////////
@@ -180,17 +190,23 @@ namespace LD31
                 ////////////////////////////////////////////////////////////////////////////
                 // .. Enemies                                                             //
                 ////////////////////////////////////////////////////////////////////////////
-                int minCount = (int)Math.Min(Math.Round((float)(p_Difficulty + Utils.RNG.Next(5)) / 8.0f), Globals.MAX_ENEMIES);
-                int maxCount = minCount + 3;
+
+                int minCount, maxCount;
+                minCount = (int)Math.Min(Math.Round((float)(p_Difficulty + Utils.RNG.Next(5)) / 8.0f), Globals.MAX_ENEMIES);
+                maxCount = minCount + 3;
+
+                // (REVISED) LIMIT ENEMY COUNT ON SMALL ROOMS OR CORRIDORS
+                if (numX * numY < Globals.SMALLROOM_MAX_SIZE) maxCount = Math.Min(maxCount, Globals.SMALLROOM_MAX_ENEMIES);
+                if (numX < Globals.CORRIDOR_MAX_SIZE || numY < Globals.CORRIDOR_MAX_SIZE) maxCount = Math.Min(maxCount, Globals.CORRIDOR_MAX_ENEMIES);
 
                 int monstercount = Utils.RNG.Next(minCount, maxCount);
                 while (monstercount != 0)
                 {
-                    this.m_Monsters.Add(LD31.MonsterFactory.Spawn((byte)Utils.RNG.Next(0, 2), this.m_Player.Dungeon.Difficulty, this.Bounds));
+                    this.m_Monsters.Add(LD31.MonsterFactory.Spawn((byte)Utils.RNG.Next(0, 2), this.m_Player.Dungeon.Difficulty, this.Bounds, this.m_Player.Location));
                     monstercount--;
                 }
 
-            
+            }
 
             ////////////////////////////////////////////////////////////////////////////
             //                      THEN, BUILDING THE ROOM                           //
@@ -203,7 +219,7 @@ namespace LD31
                     if (data[i, j] >= 10 && data[i, j] < 20) this.Collisions.Add(new Rectangle((i + minX) * Globals.CELLSIZE, (j + minY) * Globals.CELLSIZE, LD31.SpriteLibrary.Sprites[data[i, j]].Collision.Width, LD31.SpriteLibrary.Sprites[data[i, j]].Collision.Height)); 
                     this.SpriteInstances.Add(new SpriteInstance(LD31.SpriteLibrary.Sprites[data[i, j]], new Vector2((i+minX)*Globals.CELLSIZE,(j+minY)*Globals.CELLSIZE )));
                 }
-            
+
             
         }
 
@@ -215,7 +231,7 @@ namespace LD31
                 dashFactor = Globals.DASH_FACTOR;
             }
 
-            Vector2 vDirection = new Vector2(p_DeltaTime * LD31.Input.Direction.X * Globals.PLAYER_SPEED * dashFactor, p_DeltaTime * LD31.Input.Direction.Y * Globals.PLAYER_SPEED * dashFactor);
+            Vector2 vDirection = new Vector2(LD31.Input.Direction.X, LD31.Input.Direction.Y) *p_DeltaTime * Globals.PLAYER_SPEED * dashFactor;
 
             foreach (Rectangle i_Collision in this.Collisions)
             {

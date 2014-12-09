@@ -43,6 +43,8 @@ namespace LD31
             // GUI
             this.AddSprite(100, HUD_Game, 0, 32, false);
             this.AddSprite(101, HUD_Game, 1, 32, false);
+            this.AddSprite(102, HUD_Game, 2, 32, false);
+            this.AddSprite(103, HUD_Game, 3, 32, false);
 
             // Enemies
             this.AddAnimatedSprite(50, NME_Slime, new byte[6] { 0, 1, 2, 3, 4, 5 }, 25, 32, true);

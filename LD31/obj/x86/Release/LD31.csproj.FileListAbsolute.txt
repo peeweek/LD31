@@ -20,3 +20,4 @@ E:\dev\LD\LD31\LD31\LD31\bin\x86\Release\Content\Audio\GameMusic.xnb
 E:\dev\LD\LD31\LD31\LD31\bin\x86\Release\Content\Audio\GameOverMusic.xnb
 E:\dev\LD\LD31\LD31\LD31\bin\x86\Release\Content\Audio\MenuMusic.xnb
 E:\dev\LD\LD31\LD31\LD31\bin\x86\Release\Content\Audio\VictoryMusic.xnb
+E:\dev\LD\LD31\LD31\LD31\obj\x86\Release\LD31.csprojResolveAssemblyReference.cache

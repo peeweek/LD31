@@ -32,15 +32,15 @@ namespace LD31
 
         public void Draw(SpriteBatch sb, DungeonState state)
         {
-            Vector2 vHeartPosition = new Vector2(m_Dungeon.CurrentRoom.Bounds.Width - 80.0f, 8.0f);
-            Vector2 vCrystalPosition = new Vector2(8.0f, 8.0f);
+            Vector2 vHeartPosition = new Vector2(m_Dungeon.CurrentRoom.Bounds.Width - 56.0f, 6.0f);
+            Vector2 vCrystalPosition = new Vector2(0.0f, 6.0f);
 
 
-            LD31.SpriteLibrary.Sprites[100].Draw(sb, vHeartPosition, Rectangle.Empty);
-            LD31.SpriteLibrary.Sprites[101].Draw(sb, vCrystalPosition, Rectangle.Empty);
+            LD31.SpriteLibrary.Sprites[102].Draw(sb, vHeartPosition, Rectangle.Empty);
+            LD31.SpriteLibrary.Sprites[103].Draw(sb, vCrystalPosition, Rectangle.Empty);
 
-            sb.DrawString(this.HUDSpriteFont, "X" + m_Dungeon.Player.Life.ToString(), vHeartPosition + new Vector2(32.0f, 4.0f), Color.White);
-            sb.DrawString(this.HUDSpriteFont, "X" + m_Dungeon.RemainingCrystals.ToString(), vCrystalPosition + new Vector2(32.0f, 4.0f), Color.White);
+            sb.DrawString(this.HUDSpriteFont, "X" + m_Dungeon.Player.Life.ToString(), vHeartPosition + new Vector2(24.0f, 4.0f), Color.White);
+            sb.DrawString(this.HUDSpriteFont, "X" + m_Dungeon.RemainingCrystals.ToString(), vCrystalPosition + new Vector2(28.0f, 4.0f), Color.White);
 
             Vector2 size, Bsize;
 

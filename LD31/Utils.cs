@@ -20,7 +20,8 @@ namespace LD31
         public static Vector2 Collide(Rectangle Mover, Rectangle Collider, Vector2 Direction)
         {
             Vector2 Result = Direction;
-            bool collideVertical = false;
+            #region OLD COLLISION ALGORITHM 
+            /*bool collideVertical = false;
             Rectangle vSimulated = new Rectangle(Mover.X + (int)Direction.X, Mover.Y + (int)Direction.Y, Mover.Width, Mover.Height);
             if (vSimulated.Intersects(Collider))
             {
@@ -28,7 +29,38 @@ namespace LD31
                 else if (Mover.Bottom + Result.Y > Collider.Top) { Result.Y = 0.0f; collideVertical = true; } 
                 
                 if (Mover.Left + Result.X < Collider.Right && collideVertical) Result.X = 0.0f; 
-                else if (Mover.Right + Result.X > Collider.Left && collideVertical) Result.X = 0.0f; 
+                else if (Mover.Right + Result.X > Collider.Left && collideVertical) Result.X = 0.0f;
+            }*/
+            #endregion
+            
+            float ratio;
+            Rectangle vSimulated;
+            vSimulated = new Rectangle(Mover.X + (int)(Direction.X), Mover.Y + (int)(Direction.Y), Mover.Width, Mover.Height);
+
+            //Globals.SLOWDOWN_FACTOR
+            if (vSimulated.Intersects(Collider)) // Ignoring all non-colliding Cases
+            {
+                if (Mover.Bottom <= Collider.Top && Direction.Y > 0.0f && !(Mover.Right <= Collider.Left || Mover.Left >= Collider.Right)) // Going down
+                {
+                    ratio = (Mover.Bottom - Collider.Top) / Direction.Y;
+                    Result.Y *= ratio;
+                }
+                 if (Mover.Top >= Collider.Bottom && Direction.Y < 0.0f && !(Mover.Right <= Collider.Left || Mover.Left >= Collider.Right)) // Going Up
+                {
+                    ratio = (Mover.Top - Collider.Bottom) / Direction.Y;
+                    Result.Y *= ratio;
+                }
+                 if (Mover.Right <= Collider.Left && Direction.X > 0.0f && !(Mover.Bottom <= Collider.Top || Mover.Top >= Collider.Bottom)) // Going Left
+                {
+                    ratio = (Mover.Right - Collider.Left) / Direction.X;
+                    Result.X *= ratio; 
+                }
+                 if (Mover.Left >= Collider.Right && Direction.X < 0.0f && !(Mover.Bottom <= Collider.Top || Mover.Top >= Collider.Bottom)) // Going Right
+                {
+                    ratio = (Mover.Left - Collider.Right) / Direction.X;
+                    Result.X *= ratio;
+                }
+                 Result *= Globals.SLOWDOWN_FACTOR;
             }
             return Result;
         }
