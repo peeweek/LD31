@@ -1,0 +1,22 @@
+////////////////////////////////////////////////////////
+//    THROUGH THE WINDOWS REVISED EDITION CHANGELOG   //
+////////////////////////////////////////////////////////
+
+Version 1.1:
+¯¯¯¯¯¯¯¯¯¯¯¯
+
+Bug Fixes:
+==========
+ *  MAJOR COLLISION FUNCTION OVERHAUL : now does not stuck the player to the wall, but instead allows gliding but reduces its velocity. Does not stuck the enemies anymore.
+ *  Fixed the West & South Exit Triggers incorrectly placed, and that allowed the player to incorrectly exit the room.
+
+Improvements / Balancing:
+=========================
+
+ *  Limited Enemy Spawns on small rooms (5) or Corridors (3)
+ *  Limited Enemy Spawn too close to the player's entrance to the room (90px)
+ *  Added Random wall blocks inside big rooms
+ *  Removed Enemy/Pickup Spawns on the first room.
+ *  HUD Cleanup
+ *  Set the Start screen to Revised Edition in order to dissociate from the compo edition.
+ *  Troll-Factor now increases monster speed by 12% per second until reaching 3x initial speed.
