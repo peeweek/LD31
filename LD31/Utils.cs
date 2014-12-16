@@ -16,10 +16,9 @@ namespace LD31
         /// <param name="Mover">Moving object bounds</param>
         /// <param name="Collider">Collider bounds</param>
         /// <param name="Direction">Initial direction intent</param>
-        /// <returns></returns>
-        public static Vector2 Collide(Rectangle Mover, Rectangle Collider, Vector2 Direction)
+        /// <returns>The Simulated Vector based on collision on the Collider.</returns>
+        public static float Collide(Rectangle Mover, Rectangle Collider, Vector2 Direction)
         {
-            Vector2 Result = Direction;
             #region OLD COLLISION ALGORITHM 
             /*bool collideVertical = false;
             Rectangle vSimulated = new Rectangle(Mover.X + (int)Direction.X, Mover.Y + (int)Direction.Y, Mover.Width, Mover.Height);
@@ -32,38 +31,57 @@ namespace LD31
                 else if (Mover.Right + Result.X > Collider.Left && collideVertical) Result.X = 0.0f;
             }*/
             #endregion
-            
-            float ratio;
-            Rectangle vSimulated;
-            vSimulated = new Rectangle(Mover.X + (int)(Direction.X), Mover.Y + (int)(Direction.Y), Mover.Width, Mover.Height);
 
-            //Globals.SLOWDOWN_FACTOR
-            if (vSimulated.Intersects(Collider)) // Ignoring all non-colliding Cases
+            Vector2 Source = new Vector2(Mover.X + Mover.Width / 2, Mover.Y + Mover.Height / 2);
+            Vector2 Target = Source + Direction;
+
+            Rectangle vBroadPhaseSource = new Rectangle((int)Source.X, (int)Source.Y, (int)(Target.X - Source.X), (int)(Target.Y - Source.Y));
+
+            if (vBroadPhaseSource.Intersects(Collider))
             {
-                if (Mover.Bottom <= Collider.Top && Direction.Y > 0.0f && !(Mover.Right <= Collider.Left || Mover.Left >= Collider.Right)) // Going down
-                {
-                    ratio = (Mover.Bottom - Collider.Top) / Direction.Y;
-                    Result.Y *= ratio;
-                }
-                 if (Mover.Top >= Collider.Bottom && Direction.Y < 0.0f && !(Mover.Right <= Collider.Left || Mover.Left >= Collider.Right)) // Going Up
-                {
-                    ratio = (Mover.Top - Collider.Bottom) / Direction.Y;
-                    Result.Y *= ratio;
-                }
-                 if (Mover.Right <= Collider.Left && Direction.X > 0.0f && !(Mover.Bottom <= Collider.Top || Mover.Top >= Collider.Bottom)) // Going Left
-                {
-                    ratio = (Mover.Right - Collider.Left) / Direction.X;
-                    Result.X *= ratio; 
-                }
-                 if (Mover.Left >= Collider.Right && Direction.X < 0.0f && !(Mover.Bottom <= Collider.Top || Mover.Top >= Collider.Bottom)) // Going Right
-                {
-                    ratio = (Mover.Left - Collider.Right) / Direction.X;
-                    Result.X *= ratio;
-                }
-                 Result *= Globals.SLOWDOWN_FACTOR;
+                //Rectangle vExpCollider = new Rectangle( Collider.X - Mover.Width / 2, Collider.Y - Mover.Height / 2, Collider.Width + Mover.Width / 2, Collider.Height + Mover.Height / 2 );
+                Rectangle vExpCollider = Collider;
+                vExpCollider.Inflate(Mover.Width / 2, Mover.Height / 2);
+
+                // Line Testing : based on zachamarz's http://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms/18459#18459
+
+                Vector2 vDirFrac = new Vector2(1.0f / Direction.X, 1.0f / Direction.Y);
+                float t1 = (vExpCollider.Left - Source.X) * vDirFrac.X;
+                float t2 = (vExpCollider.Right - Source.X) * vDirFrac.X;
+                float t3 = (vExpCollider.Top - Source.Y) * vDirFrac.Y;
+                float t4 = (vExpCollider.Bottom - Source.Y) * vDirFrac.Y;
+
+                float tMin = Math.Max(Math.Min(t1, t2), Math.Min(t3, t4));
+                float tMax = Math.Min(Math.Max(t1, t2), Math.Max(t3, t4));
+
+                if (tMax < 0.0f) // Collision is behind us 
+                    return 1.0f;
+                if (tMin > tMax && tMin < 0.0f) // No Intersection whatsoever
+                    return 1.0f;
+                return tMin;
             }
+
+            return 1.0f;
+        }
+
+        /// <summary>
+        /// Collision Response along with the direction
+        /// </summary>
+        /// <param name="pTime"></param>
+        /// <param name="Mover"></param>
+        /// <param name="Collider"></param>
+        /// <param name="Direction"></param>
+        /// <returns></returns>
+        public static Vector2 RespondCollision(float pTime, Rectangle Mover, Rectangle Collider, Vector2 Direction)
+        {
+            Vector2 Result = Direction * pTime;
+            Vector2 Slide = Vector2.Zero;
+
+            Result += Slide;
+
             return Result;
         }
+
 
         // The RNG for the game, one is enough.
         public static Random RNG = new Random();

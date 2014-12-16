@@ -64,9 +64,17 @@ namespace LD31
 
             Vector2 vDirection = Vector2.Normalize(p_Player.Location - this.m_Location) * m_Speed * DeltaTime * m_TrollFactor;
 
+            float vResult;
+            SortedList<float, Rectangle> vCoherentCollisions = new SortedList<float, Rectangle>();
             foreach (Rectangle i_Collision in p_Player.Dungeon.CurrentRoom.Collisions)
             {
-                vDirection = Utils.Collide(this.m_CollisionBounds, i_Collision, vDirection);
+                vResult = Utils.Collide(this.m_CollisionBounds, i_Collision, vDirection);
+                if(vResult < 1.0f) vCoherentCollisions.Add(vResult, i_Collision);
+            }
+
+            foreach (KeyValuePair<float, Rectangle> i_Kvp in vCoherentCollisions)
+            {
+                vDirection = Utils.RespondCollision(i_Kvp.Key, this.m_CollisionBounds, i_Kvp.Value, vDirection);
             }
 
             this.SetLocation(this.m_Location + vDirection );

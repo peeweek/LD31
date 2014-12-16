@@ -233,10 +233,22 @@ namespace LD31
 
             Vector2 vDirection = new Vector2(LD31.Input.Direction.X, LD31.Input.Direction.Y) *p_DeltaTime * Globals.PLAYER_SPEED * dashFactor;
 
+            float vResult;
+            SortedList<float, Rectangle> vCoherentCollisions = new SortedList<float, Rectangle>();
             foreach (Rectangle i_Collision in this.Collisions)
             {
-                vDirection = Utils.Collide(m_Player.CollisionBounds, i_Collision, vDirection);
+                vResult = Utils.Collide(this.m_Player.CollisionBounds, i_Collision, vDirection);
+                if (vResult < 1.0f) 
+                    vCoherentCollisions.Add(vResult, i_Collision);
             }
+
+            foreach (KeyValuePair<float, Rectangle> i_Kvp in vCoherentCollisions)
+            {
+                vDirection = Utils.RespondCollision(i_Kvp.Key, this.m_Player.CollisionBounds, i_Kvp.Value, vDirection);
+            }
+
+
+
 
             foreach (RoomExit i_Exit in this.m_RoomExits)
             {
